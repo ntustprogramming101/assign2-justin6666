@@ -1,6 +1,6 @@
 PImage  startNormal, startHovered, title, bg , groundHogIdle , 
         soil, life, soldier,cabbage,gameover,restartNormal,restartHovered
-        ;
+        , groundHog ;
 
 int x=10; 
 int soldierX;
@@ -13,9 +13,17 @@ boolean leftPressed;
 boolean rightPressed;
 boolean groundHogRetern;
 
+
 int groundHogX=320;
 int groundHogY=80;
 int groundHogSpeed=80;
+
+final int stop=0; 
+final int goLeft=1;
+final int goRight=2;
+final int goDown=3;
+int movement=stop;
+int grid=80;
 
 final int GAME_START = 0;
 final int GAME_RUN = 1;
@@ -82,6 +90,30 @@ switch(gameState){
   
   case GAME_RUN:
   
+   switch(movement){
+        case stop:
+          groundHog = loadImage("img/groundhogIdle.png");
+          groundHogY+=0;
+        break;
+        case goDown:
+          groundHogY+=5;
+          groundHog = loadImage("img/groundhogDown.png");
+          if(groundHogY%grid==0){movement=stop;}
+        break;
+        case goLeft:
+          groundHogX-=5;
+          groundHog = loadImage("img/groundhogLeft.png");
+          if(groundHogX%grid==0){movement=stop;}
+        break;
+        case goRight:
+          groundHogX+=5;
+          groundHog = loadImage("img/groundhogRight.png");
+          if(groundHogX%grid==0){movement=stop;}
+        break;
+        
+        }
+  
+  
   //bg
   background(bg);
 //grass
@@ -91,7 +123,7 @@ switch(gameState){
 //soil
   image(soil,0,160);
 //groundhog
-  image(groundHogIdle,groundHogX,groundHogY);
+  image(groundHog,groundHogX,groundHogY);
 //life
   image(life,life1,10);
   image(life,life2,10);
@@ -110,7 +142,7 @@ image(soldier,soldierX,soldierY);
 image(cabbage,cabbageX,cabbageY);
 
 //meet soldier
-if(soldierX+80>=groundHogX && soldierX>groundHogX && soldierY<groundHogY+80 &&
+if(soldierX+80>groundHogX  && soldierY<groundHogY+80 &&
    groundHogY<soldierY+80 && groundHogX+80>soldierX){
  if(life1 == 10&& life2 == 80 && life3 == 150){
  life3=-300;
@@ -159,25 +191,18 @@ if(mouseX > BUTTON_LEFT && mouseX < BUTTON_RIGHT
 
 
 void keyPressed(){
-  if(key == CODED){
-  switch(keyCode){
- 
-  case DOWN:
-  groundHogY += groundHogSpeed;
-  if (groundHogY>400){groundHogY=400;}
-  break;
-  
-  case LEFT:
-  groundHogX -= groundHogSpeed;
-  if (groundHogX<0){groundHogX=0;}
-  break;
-  
-  case RIGHT:
-  groundHogX += groundHogSpeed;
-  if (groundHogX>560){groundHogX=560;}
-  break;
-}
-}
+  if(groundHogX%grid==0 && groundHogY%grid==0){
+    switch(keyCode){
+    case DOWN:
+    if(groundHogY+grid<height){movement=goDown;}
+    break;
+    case RIGHT:
+    if(groundHogX+grid<width){movement=goRight;}
+    break;
+    case LEFT:
+    if(groundHogX>0){movement=goLeft;}
+    break;
+  }}
 }
 
 void keyReleased(){
